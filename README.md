@@ -51,18 +51,51 @@ NocoDB is the fastest and easiest way to build databases online.
 
 [![Stargazers repo roster for @nocodb/nocodb](http://reporoster.com/stars/nocodb/nocodb)](https://github.com/nocodb/nocodb/stargazers)
 
+# Table of Contents
+
+- [Join Our Community](#join-our-community)
+- [Installation](#installation)
+  - [Docker with SQLite](#docker-with-sqlite)
+  - [Docker with PostgreSQL](#docker-with-postgresql)
+  - [Troubleshooting](#troubleshooting)
+- [Features](#features)
+  - [Rich Spreadsheet Interface](#rich-spreadsheet-interface)
+  - [Workflow Automations](#workflow-automations)
+  - [Programmatic Access](#programmatic-access)
+- [Contributing](#contributing)
+- [Why are we building this?](#why-are-we-building-this)
+- [License](#license)
+- [Contributors](#contributors)
+
+
 
 # Installation
 
-
 ## Docker with SQLite
 
-```bash 
-docker run -d --name noco 
-           -v "$(pwd)"/nocodb:/usr/app/data/ 
-           -p 8080:8080 
+Ensure Docker is installed and running. If not installed, follow the [Docker installation guide](https://docs.docker.com/get-docker/).
+
+Once Docker is ready, you can start NocoDB with SQLite by running:
+
+```bash
+docker run -d --name noco \
+           -v "$(pwd)"/nocodb:/usr/app/data/ \
+           -p 8080:8080 \
            nocodb/nocodb:latest
 ```
+
+## Docker with PostgreSQL
+
+To run NocoDB with PostgreSQL, use the following command. Replace `<host>`, `<username>`, `<password>`, and `<dbname>` with your PostgreSQL connection details:
+
+```bash
+docker run -d --name noco \
+           -v "$(pwd)"/nocodb:/usr/app/data/ \
+           -p 8080:8080 \
+           -e NC_DB="pg://<host>:5432?u=<username>&p=<password>&d=<dbname>" \
+           -e NC_AUTH_JWT_SECRET="your_secret" \
+           nocodb/nocodb:latest
+
 
 ## Docker with PG
 ```bash
@@ -168,6 +201,8 @@ We provide the following ways to let users programmatically invoke actions. You 
 Please refer to [Contribution Guide](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md).
 
 # Why are we building this?
+
+NocoDB is an open-source platform that transforms your existing databases into a no-code, spreadsheet-like interface. It is designed to make database management accessible to users without technical expertise, allowing them to perform CRUD operations (Create, Read, Update, Delete) on tables and rows visually. NocoDB supports various database systems, including MySQL, PostgreSQL, and SQLite, providing flexibility in how users manage their data. The project aims to democratize access to database tools, reducing dependency on complex software systems and eliminating vendor lock-in. Ultimately, NocoDB enables businesses and individuals to manage, share, and collaborate on data more efficiently.
 
 Most internet businesses equip themselves with either spreadsheet or a database to solve their business needs. Spreadsheets are used by Billion+ humans collaboratively every single day. However, we are way off working at similar speeds on databases which are way more powerful tools when it comes to computing. Attempts to solve this with SaaS offerings have meant horrible access controls, vendor lock-in, data lock-in, abrupt price changes & most importantly a glass ceiling on what's possible in the future.
 
