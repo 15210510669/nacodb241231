@@ -6688,7 +6688,10 @@ class BaseModelSqlv2 {
     });
   }
 
-  public async beforeUpdate(data: any, _trx: any, req): Promise<void> {
+  public async beforeUpdate(data: any, _trx: any, req,
+    fromLinkColUpdate: boolean | null  = false,
+
+  ): Promise<void> {
     const ignoreWebhook = req.query?.ignoreWebhook;
     if (ignoreWebhook) {
       if (ignoreWebhook != 'true' && ignoreWebhook != 'false') {
@@ -6696,16 +6699,19 @@ class BaseModelSqlv2 {
       }
     }
     if (ignoreWebhook === undefined || ignoreWebhook === 'false') {
-      await this.handleHooks('before.update', null, data, req);
+      await this.handleHooks('before.update', null, data, req , fromLinkColUpdate);
     }
   }
 
   public async afterUpdate(
     prevData: any,
     newData: any,
+
     _trx: any,
     req,
     updateObj?: Record<string, any>,
+  fromLinkColUpdate: boolean | null  = false,
+
   ): Promise<void> {
     const id = this.extractPksValues(newData);
     let desc = `Record with ID ${id} has been updated in Table ${this.model.title}.`;
@@ -6750,7 +6756,7 @@ class BaseModelSqlv2 {
       }
     }
     if (ignoreWebhook === undefined || ignoreWebhook === 'false') {
-      await this.handleHooks('after.update', prevData, newData, req);
+      await this.handleHooks('after.update', prevData, newData, req , fromLinkColUpdate);
     }
   }
 
@@ -6778,7 +6784,9 @@ class BaseModelSqlv2 {
     await this.handleHooks('after.delete', null, data, req);
   }
 
-  protected async handleHooks(hookName, prevData, newData, req): Promise<void> {
+  protected async handleHooks(hookName, prevData, newData, req,
+    fromLinkColUpdate: boolean | null  = false,
+  ): Promise<void> {
     Noco.eventEmitter.emit(HANDLE_WEBHOOK, {
       context: this.context,
       hookName,
@@ -6788,6 +6796,7 @@ class BaseModelSqlv2 {
       viewId: this.viewId,
       modelId: this.model.id,
       tnPath: this.tnPath,
+      fromLinkColUpdate: fromLinkColUpdate
     });
   }
 
