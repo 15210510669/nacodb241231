@@ -196,6 +196,7 @@ export class ImportService {
             ...modelData,
             columns: reducedColumnSet.map((a) => withoutId(a)),
           }),
+          req: param.req,
         }));
 
       idMap.set(modelData.id, table.id);
@@ -441,6 +442,7 @@ export class ImportService {
                           title: childColumn.title,
                         },
                         user: param.user,
+                        req: param.req,
                       });
                     }
                     break;
@@ -550,6 +552,7 @@ export class ImportService {
                         title: childColumn.title,
                       },
                       user: param.user,
+                      req: param.req,
                     });
                   }
                 }
@@ -587,6 +590,7 @@ export class ImportService {
                           title: relatedCol.title,
                         },
                         user: param.user,
+                        req: param.req,
                       });
                     }
                   }
@@ -711,6 +715,7 @@ export class ImportService {
                           title: childColumn.title,
                         },
                         user: param.user,
+                        req: param.req,
                       });
                     }
                     break;
@@ -849,6 +854,7 @@ export class ImportService {
                           title: childColumn.title,
                         },
                         user: param.user,
+                        req: param.req,
                       });
                     }
 
@@ -887,6 +893,7 @@ export class ImportService {
                               title: relatedCol.title,
                             },
                             user: param.user,
+                            req: param.req,
                           });
                         }
                       }
@@ -1026,6 +1033,7 @@ export class ImportService {
                           title: childColumn.title,
                         },
                         user: param.user,
+                        req: param.req,
                       });
                     }
                   }
@@ -1065,6 +1073,7 @@ export class ImportService {
                             title: relatedCol.title,
                           },
                           user: param.user,
+                          req: param.req,
                         });
                       }
                     }
@@ -1472,6 +1481,7 @@ export class ImportService {
               order: fcl.order,
               ...calendarColProperties,
             },
+            internal: true,
             req: param.req,
           });
         }

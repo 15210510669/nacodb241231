@@ -197,7 +197,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     switch (event) {
       case AppEvents.PROJECT_INVITE:
         {
-          const { base, user, invitedBy } = data as ProjectInviteEvent;
+          const { base, user } = data as ProjectInviteEvent;
 
           await this.insertNotification(
             {
@@ -210,9 +210,9 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
                   type: base.type,
                 },
                 user: {
-                  id: invitedBy.id,
-                  email: invitedBy.email,
-                  displayName: invitedBy.display_name,
+                  id: req.user.id,
+                  email: req.user.email,
+                  displayName: req.user.display_name,
                 },
               },
             },
