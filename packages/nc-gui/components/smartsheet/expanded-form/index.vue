@@ -685,29 +685,23 @@ export default {
             <a-skeleton-input active class="!h-6 !sm:mr-14 !w-52 !rounded-md !overflow-hidden" size="small" />
           </div>
           <div v-else class="flex-1 flex items-center gap-2 xs:(flex-row-reverse justify-end)">
-            <div class="hidden md:flex items-center rounded-lg bg-gray-100 px-2 py-1 gap-2">
-              <GeneralIcon icon="table" />
-              <span class="nc-expanded-form-table-name">
-                {{ tableTitle }}
-              </span>
-            </div>
             <div
               v-if="row.rowMeta?.new || props.newRecordHeader"
-              class="flex items-center truncate font-bold text-gray-800 text-base overflow-hidden"
+              class="flex items-center truncate font-bold text-gray-800 text-xl overflow-hidden"
             >
               {{ props.newRecordHeader ?? $t('activity.newRecord') }}
             </div>
             <div
               v-else-if="displayValue && !row?.rowMeta?.new"
-              class="flex items-center font-bold text-gray-800 text-base overflow-hidden"
+              class="flex items-center font-bold text-gray-800 text-2xl overflow-hidden"
             >
-              <span class="truncate w-[128px]">
+              <span class="truncate w-[120px] md:w-[300px]">
                 <LazySmartsheetPlainCell v-model="displayValue" :column="displayField" />
               </span>
             </div>
           </div>
         </div>
-        <div class="ml-auto md:mx-auto">
+        <div class="ml-auto">
           <NcSelectTab
             v-if="isEeUI && isFeatureEnabled(FEATURE_FLAG.EXPANDED_FORM_FILE_PREVIEW_MODE)"
             v-model="activeViewMode"
