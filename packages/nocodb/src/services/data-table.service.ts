@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { isLinksOrLTAR, RelationTypes, ViewTypes } from 'nocodb-sdk';
 import { validatePayload } from 'src/helpers';
+import type { NcApiVersion } from 'nocodb-sdk';
 import type { LinkToAnotherRecordColumn } from '~/models';
 import type { NcContext } from '~/interface/config';
 import { nocoExecute } from '~/utils';
@@ -23,6 +24,7 @@ export class DataTableService {
       query: any;
       viewId?: string;
       ignorePagination?: boolean;
+      apiVersion?: NcApiVersion;
     },
   ) {
     const { modelId, viewId, baseId, ...rest } = param;
@@ -42,6 +44,7 @@ export class DataTableService {
       rowId: string;
       viewId?: string;
       query: any;
+      apiVersion?: NcApiVersion;
     },
   ) {
     const { model, view } = await this.getModelAndView(context, param);
@@ -57,6 +60,7 @@ export class DataTableService {
 
     const row = await baseModel.readByPk(param.rowId, false, param.query, {
       throwErrorIfInvalidParams: true,
+      apiVersion: param.apiVersion,
     });
 
     if (!row) {
@@ -113,6 +117,7 @@ export class DataTableService {
       modelId: string;
       body: any;
       cookie: any;
+      apiVersion?: NcApiVersion;
     },
   ) {
     const { model, view } = await this.getModelAndView(context, param);
@@ -131,6 +136,7 @@ export class DataTableService {
         cookie: param.cookie,
         insertOneByOneAsFallback: true,
         isSingleRecordInsertion: !Array.isArray(param.body),
+        apiVersion: param.apiVersion
       },
     );
 
@@ -146,6 +152,7 @@ export class DataTableService {
       // rowId: string;
       body: any;
       cookie: any;
+      apiVersion?: NcApiVersion;
     },
   ) {
     const { model, view } = await this.getModelAndView(context, param);
@@ -166,6 +173,7 @@ export class DataTableService {
         cookie: param.cookie,
         throwExceptionIfNotExist: true,
         isSingleRecordUpdation: !Array.isArray(param.body),
+        apiVersion: param.apiVersion,
       },
     );
 
@@ -213,6 +221,7 @@ export class DataTableService {
       viewId?: string;
       modelId: string;
       query: any;
+      apiVersion?: NcApiVersion;
     },
   ) {
     const { model, view } = await this.getModelAndView(context, param);
@@ -341,6 +350,7 @@ export class DataTableService {
       query: any;
       rowId: string | string[] | number | number[];
       columnId: string;
+      apiVersion?: NcApiVersion;
     },
   ) {
     const { model, view } = await this.getModelAndView(context, param);
@@ -385,6 +395,7 @@ export class DataTableService {
         {
           colId: column.id,
           parentId: param.rowId,
+          apiVersion: param.apiVersion,
         },
         listArgs as any,
       );
@@ -400,6 +411,7 @@ export class DataTableService {
         {
           colId: column.id,
           id: param.rowId,
+          apiVersion: param.apiVersion,
         },
         listArgs as any,
       );
@@ -415,6 +427,7 @@ export class DataTableService {
         {
           colId: column.id,
           id: param.rowId,
+          apiVersion: param.apiVersion,
         },
         param.query as any,
       );

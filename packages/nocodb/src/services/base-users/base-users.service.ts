@@ -9,7 +9,11 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import * as ejs from 'ejs';
 import validator from 'validator';
-import type { ProjectUserReqType, UserType } from 'nocodb-sdk';
+import type {
+  ProjectUserReqType,
+  ProjectUserUpdateReqType,
+  UserType,
+} from 'nocodb-sdk';
 import type { NcContext, NcRequest } from '~/interface/config';
 import { validatePayload } from '~/helpers';
 import Noco from '~/Noco';
@@ -51,6 +55,7 @@ export class BaseUsersService {
       baseUser: ProjectUserReqType;
       req: NcRequest;
     },
+    ncMeta = Noco.ncMeta,
   ): Promise<any> {
     validatePayload(
       'swagger.json#/components/schemas/ProjectUserReq',
@@ -97,9 +102,9 @@ export class BaseUsersService {
 
     for (const email of emails) {
       // add user to base if user already exist
-      const user = await User.getByEmail(email);
+      const user = await User.getByEmail(email, ncMeta);
 
-      const base = await Base.get(context, param.baseId);
+      const base = await Base.get(context, param.baseId, ncMeta);
 
       if (!base) {
         return NcError.baseNotFound(param.baseId);
@@ -107,9 +112,14 @@ export class BaseUsersService {
 
       if (user) {
         // check if this user has been added to this base
-        const baseUser = await BaseUser.get(context, param.baseId, user.id);
+        const baseUser = await BaseUser.get(
+          context,
+          param.baseId,
+          user.id,
+          ncMeta,
+        );
 
-        const base = await Base.get(context, param.baseId);
+        const base = await Base.get(context, param.baseId, ncMeta);
 
         if (!base) {
           return NcError.baseNotFound(param.baseId);
@@ -128,14 +138,19 @@ export class BaseUsersService {
             param.baseId,
             user.id,
             param.baseUser.roles,
+            ncMeta,
           );
         } else {
-          await BaseUser.insert(context, {
-            base_id: param.baseId,
-            fk_user_id: user.id,
-            roles: param.baseUser.roles || 'editor',
-            invited_by: param.req?.user?.id,
-          });
+          await BaseUser.insert(
+            context,
+            {
+              base_id: param.baseId,
+              fk_user_id: user.id,
+              roles: param.baseUser.roles || 'editor',
+              invited_by: param.req?.user?.id,
+            },
+            ncMeta,
+          );
         }
 
         this.appHooksService.emit(AppEvents.PROJECT_INVITE, {
@@ -148,21 +163,28 @@ export class BaseUsersService {
       } else {
         try {
           // create new user with invite token
-          const user = await User.insert({
-            invite_token,
-            invite_token_expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-            email,
-            roles: OrgUserRoles.VIEWER,
-            token_version: randomTokenString(),
-          });
+          const user = await User.insert(
+            {
+              invite_token,
+              invite_token_expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+              email,
+              roles: OrgUserRoles.VIEWER,
+              token_version: randomTokenString(),
+            },
+            ncMeta,
+          );
 
           // add user to base
-          await BaseUser.insert(context, {
-            base_id: param.baseId,
-            fk_user_id: user.id,
-            roles: param.baseUser.roles,
-            invited_by: param.req?.user?.id,
-          });
+          await BaseUser.insert(
+            context,
+            {
+              base_id: param.baseId,
+              fk_user_id: user.id,
+              roles: param.baseUser.roles,
+              invited_by: param.req?.user?.id,
+            },
+            ncMeta,
+          );
 
           this.appHooksService.emit(AppEvents.PROJECT_INVITE, {
             base,
@@ -176,25 +198,31 @@ export class BaseUsersService {
           // and send back token if email not configured
           if (emails.length === 1) {
             // variable to keep invite mail send status
-            const mailSendStatus = await this.sendInviteEmail({
-              email,
-              token: invite_token,
-              req: param.req,
-              baseName: base.title,
-              roles: param.baseUser.roles || 'editor',
-            });
+            const mailSendStatus = await this.sendInviteEmail(
+              {
+                email,
+                token: invite_token,
+                req: param.req,
+                baseName: base.title,
+                roles: param.baseUser.roles || 'editor',
+              },
+              ncMeta,
+            );
 
             if (!mailSendStatus) {
               return { invite_token, email };
             }
           } else {
-            await this.sendInviteEmail({
-              email,
-              token: invite_token,
-              req: param.req,
-              baseName: base.title,
-              roles: param.baseUser.roles || 'editor',
-            });
+            await this.sendInviteEmail(
+              {
+                email,
+                token: invite_token,
+                req: param.req,
+                baseName: base.title,
+                roles: param.baseUser.roles || 'editor',
+              },
+              ncMeta,
+            );
           }
         } catch (e) {
           this.logger.error(e.message, e.stack);
@@ -220,15 +248,13 @@ export class BaseUsersService {
     context: NcContext,
     param: {
       userId: string;
-      // todo: update swagger
-      baseUser: ProjectUserReqType & { base_id: string };
-      // todo: refactor
-      req: any;
+      baseUser: ProjectUserUpdateReqType;
+      req: NcRequest;
       baseId: string;
     },
   ): Promise<any> {
     validatePayload(
-      'swagger.json#/components/schemas/ProjectUserReq',
+      'swagger.json#/components/schemas/ProjectUserUpdateReq',
       param.baseUser,
     );
 
@@ -302,7 +328,7 @@ export class BaseUsersService {
       ip: param.req.clientIp,
       baseUser: param.baseUser,
       req: param.req,
-    });
+    } as any);
 
     return {
       msg: 'User has been updated successfully',
@@ -440,21 +466,24 @@ export class BaseUsersService {
     return true;
   }
 
-  async sendInviteEmail({
-    email,
-    token,
-    req,
-    baseName,
-    roles,
-    useOrgTemplate,
-  }: {
-    email: string;
-    token: string;
-    req: NcRequest;
-    baseName?: string;
-    roles: string;
-    useOrgTemplate?: boolean;
-  }): Promise<any> {
+  async sendInviteEmail(
+    {
+      email,
+      token,
+      req,
+      baseName,
+      roles,
+      useOrgTemplate,
+    }: {
+      email: string;
+      token: string;
+      req: NcRequest;
+      baseName?: string;
+      roles: string;
+      useOrgTemplate?: boolean;
+    },
+    ncMeta = Noco.ncMeta,
+  ): Promise<any> {
     try {
       let template: string;
 
@@ -468,7 +497,7 @@ export class BaseUsersService {
           await import('~/services/base-users/ui/emailTemplates/invite')
         ).default;
       }
-      const emailAdapter = await NcPluginMgrv2.emailAdapter();
+      const emailAdapter = await NcPluginMgrv2.emailAdapter(undefined, ncMeta);
 
       if (emailAdapter) {
         await emailAdapter.mailSend({
