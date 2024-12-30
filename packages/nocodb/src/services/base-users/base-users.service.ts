@@ -300,6 +300,7 @@ export class BaseUsersService {
       param.userId,
       param.baseUser.roles,
     );
+
     this.appHooksService.emit(AppEvents.PROJECT_USER_UPDATE, {
       base,
       user,
