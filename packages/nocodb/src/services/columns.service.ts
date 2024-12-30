@@ -336,13 +336,12 @@ export class  ColumnsService {
       */
       await table.getColumns(context);
 
+      const updatedColumn = await Column.get(context, { colId: param.columnId });
+
       this.appHooksService.emit(AppEvents.COLUMN_UPDATE, {
         table,
         oldColumn,
-        column: {
-          ...column,
-          ...param.column,
-        },
+        column: updatedColumn,
         columnId: column.id,
         req: param.req,
         context,
@@ -1706,13 +1705,13 @@ export class  ColumnsService {
     // Get all the columns in the table and return
     await table.getColumns(context);
 
+
+    const updatedColumn = await Column.get(context, { colId: param.columnId });
+
     this.appHooksService.emit(AppEvents.COLUMN_UPDATE, {
       table,
       oldColumn,
-      column: {
-        ...column,
-        ...param.column,
-      },
+      column: updatedColumn,
       columnId: param.columnId,
       req: param.req,
       context,
