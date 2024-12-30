@@ -29,7 +29,6 @@ import { Logger } from '@nestjs/common';
 import type {
   BulkAuditV1OperationTypes,
   DataBulkDeletePayload,
-  DataBulkInsertPayload,
   DataBulkUpdateAllPayload,
   DataBulkUpdatePayload,
   DataDeletePayload,
@@ -95,7 +94,7 @@ import {
   remapWithAlias,
   removeBlankPropsAndMask,
 } from '~/ee/utils';
-import { Audit, ModelStat } from '~/ee/models';
+import { Audit } from '~/ee/models';
 import { UPDATE_WORKSPACE_COUNTER } from '~/ee/services/update-stats.service';
 import { MetaTable } from '~/ee/utils/globals';
 import { extractColsMetaForAudit } from '~/ee/db/BaseModelSqlv2';
