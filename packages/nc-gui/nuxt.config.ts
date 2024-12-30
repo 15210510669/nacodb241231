@@ -14,14 +14,18 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
+
   modules: ['@vueuse/nuxt', 'nuxt-windicss', '@nuxt/image', '@pinia/nuxt'],
   ssr: false,
+
   router: {
     options: {
       hashMode: true,
     },
   },
+
   spaLoadingTemplate: false,
+
   app: {
     pageTransition: process.env.NUXT_PAGE_TRANSITION_DISABLE
       ? false
@@ -284,6 +288,7 @@ export default defineNuxtConfig({
   image: {
     dir: 'assets/',
   },
+
   imports: {
     dirs: ['./context', './utils/**', './lib', './composables/**', './store/**', './helpers'],
     imports: [
@@ -296,4 +301,6 @@ export default defineNuxtConfig({
       { name: 'storeToRefs', from: 'pinia' },
     ],
   },
+
+  compatibilityDate: '2024-12-29',
 })
