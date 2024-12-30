@@ -214,7 +214,6 @@ export class UsersService {
 
     this.appHooksService.emit(AppEvents.USER_PASSWORD_CHANGE, {
       user: user,
-      ip: param.req?.clientIp,
       req: param.req,
     });
 
@@ -263,7 +262,6 @@ export class UsersService {
           }),
         );
       } catch (e) {
-        console.log(e);
         return NcError.badRequest(
           'Email Plugin is not found. Please contact administrators to configure it in App Store first.',
         );
@@ -271,7 +269,6 @@ export class UsersService {
 
       this.appHooksService.emit(AppEvents.USER_PASSWORD_FORGOT, {
         user: user,
-        ip: param.req?.clientIp,
         req: param.req,
       });
     } else {
@@ -354,7 +351,6 @@ export class UsersService {
 
     this.appHooksService.emit(AppEvents.USER_PASSWORD_RESET, {
       user: user,
-      ip: param.req?.clientIp,
       req: param.req,
     });
 
@@ -389,7 +385,6 @@ export class UsersService {
 
     this.appHooksService.emit(AppEvents.USER_EMAIL_VERIFICATION, {
       user: user,
-      ip: req?.clientIp,
       req,
     });
 
@@ -541,7 +536,6 @@ export class UsersService {
 
     this.appHooksService.emit(AppEvents.USER_SIGNUP, {
       user: user,
-      ip: param.req?.clientIp,
       req: param.req,
     });
 

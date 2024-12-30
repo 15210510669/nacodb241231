@@ -21,7 +21,7 @@ import { NcContext, NcRequest } from '~/interface/config';
 @Controller()
 @UseGuards(DataApiLimiterGuard, GlobalGuard)
 export class BulkDataAliasController {
-  constructor(private bulkDataAliasService: BulkDataAliasService) {}
+  constructor(protected bulkDataAliasService: BulkDataAliasService) {}
 
   @Post(['/api/v1/db/data/bulk/:orgs/:baseName/:tableName'])
   @HttpCode(200)
@@ -41,7 +41,7 @@ export class BulkDataAliasController {
       tableName: tableName,
     });
 
-    res.json(exists);
+    res.header('nc-operation-id', req.ncParentAuditId).json(exists);
   }
 
   @Patch(['/api/v1/db/data/bulk/:orgs/:baseName/:tableName'])

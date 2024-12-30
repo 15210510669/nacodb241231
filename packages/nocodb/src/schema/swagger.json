@@ -11405,6 +11405,14 @@
                   }
                 }
               }
+            },
+            "headers": {
+               "nc-operation-id": {
+                "schema": {
+                  "type": "string",
+                  "description": "Operation ID"
+                }
+              }
             }
           },
           "400": {
@@ -11445,6 +11453,22 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/xc-auth"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "nc-operation-id",
+            "description": "Operation ID"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "nc-import-type",
+            "description": "Import Type if triggering from import"
           }
         ]
       },
@@ -19502,46 +19526,6 @@
           "id": "n44nqsmhm56c7"
         }
       },
-      "AuditRowUpdateReq": {
-        "description": "Model for Audit Row Update Request",
-        "examples": [
-          {
-            "column_name": "baz",
-            "fk_model_id": "md_ehn5izr99m7d45",
-            "row_id": "rec0Adp9PMG9o7uJy",
-            "prev_value": "foo",
-            "value": "bar"
-          }
-        ],
-        "title": "Audit Row Update Request Model",
-        "type": "object",
-        "properties": {
-          "column_name": {
-            "type": "string",
-            "description": "Column Name",
-            "example": "baz"
-          },
-          "fk_model_id": {
-            "type": "string",
-            "description": "Foreign Key to Model",
-            "example": "md_ehn5izr99m7d45"
-          },
-          "row_id": {
-            "type": "string",
-            "example": "rec0Adp9PMG9o7uJy",
-            "description": "Row ID"
-          },
-          "prev_value": {
-            "description": "The previous value before the action"
-          },
-          "value": {
-            "description": "The current value after the action"
-          }
-        },
-        "x-stoplight": {
-          "id": "2fzwvc4m1k5or"
-        }
-      },
       "Source": {
         "description": "Model for Source",
         "examples": [
@@ -25130,7 +25114,7 @@
           "fk_column_id": {
             "$ref": "#/components/schemas/Id"
           },
-          "fk_model_id": {
+          "fk_view_id": {
             "$ref": "#/components/schemas/Id"
           },
           "source_id": {

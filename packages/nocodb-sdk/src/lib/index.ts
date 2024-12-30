@@ -27,6 +27,9 @@ export {
   partialUpdateAllowedTypes,
   isSupportedDisplayValueColumn,
   columnTypeName,
+  durationOptions,
+  ratingIconList,
+  checkboxIconList,
 } from '~/lib/UITypes';
 export { default as CustomAPI, FileType } from '~/lib/CustomAPI';
 export { default as TemplateGenerator } from '~/lib/TemplateGenerator';
@@ -40,5 +43,7 @@ export * from '~/lib/filterHelpers';
 export * from '~/lib/errorUtils';
 export * from '~/lib/formBuilder';
 export * from '~/lib/ai';
+export * from '~/lib/audit';
+export * from '~/lib/ncTypes';
 export * from '~/lib/import-export-data';
 export * from '~/lib/is';

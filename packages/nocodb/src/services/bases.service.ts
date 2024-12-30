@@ -106,9 +106,15 @@ export class BasesService {
     const result = await Base.update(context, param.baseId, data);
 
     this.appHooksService.emit(AppEvents.PROJECT_UPDATE, {
-      base,
+      base: {
+        ...base,
+        ...data,
+      },
+      updateObj: data,
+      oldBaseObj: base,
       user: param.user,
       req: param.req,
+      context,
     });
 
     return result;
@@ -150,6 +156,7 @@ export class BasesService {
       base,
       user: param.user,
       req: param.req,
+      context,
     });
 
     return true;
@@ -297,6 +304,7 @@ export class BasesService {
         this.appHooksService.emit(AppEvents.APIS_CREATED, {
           info,
           req: param.req,
+          context,
         });
 
         source.config = undefined;
@@ -308,6 +316,7 @@ export class BasesService {
       user: param.user,
       xcdb: !baseBody.external,
       req: param.req,
+      context,
     });
 
     return base;
@@ -340,6 +349,7 @@ export class BasesService {
         columns,
       },
       user: param.user,
+      req: param.req,
     });
 
     (base as any).tables = [table];
