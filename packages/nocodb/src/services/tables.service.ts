@@ -18,6 +18,7 @@ import type {
   ColumnType,
   NormalColumnRequestType,
   TableReqType,
+  TableType,
   UserType,
 } from 'nocodb-sdk';
 import type { MetaService } from '~/meta/meta.service';
@@ -76,6 +77,13 @@ export class TablesService {
     // todo: allow user to update meta  and other prop in single api call
     if ('meta' in param.table || 'description' in param.table) {
       await Model.updateMeta(context, param.tableId, param.table);
+
+      this.appHooksService.emit(AppEvents.TABLE_UPDATE, {
+        table: param.table,
+        prevTable: model,
+        req: param.req,
+        context,
+      });
 
       return true;
     }
@@ -174,16 +182,34 @@ export class TablesService {
     );
 
     this.appHooksService.emit(AppEvents.TABLE_UPDATE, {
-      table: model,
-      user: param.user,
+      table: param.table,
+      prevTable: model,
       req: param.req,
+      context,
     });
 
     return true;
   }
 
-  reorderTable(context: NcContext, param: { tableId: string; order: any }) {
-    return Model.updateOrder(context, param.tableId, param.order);
+  async reorderTable(
+    context: NcContext,
+    param: { tableId: string; order: any; req: NcRequest },
+  ) {
+    const model = await Model.get(context, param.tableId);
+
+    const res = await Model.updateOrder(context, param.tableId, param.order);
+
+    this.appHooksService.emit(AppEvents.TABLE_UPDATE, {
+      prevTable: model as TableType,
+      table: {
+        ...model,
+        order: param.order,
+      } as TableType,
+      req: param.req,
+      context,
+    } as any);
+
+    return res;
   }
 
   async tableDelete(
@@ -322,8 +348,8 @@ export class TablesService {
       this.appHooksService.emit(AppEvents.TABLE_DELETE, {
         table,
         user: param.user,
-        ip: param.req?.clientIp,
         req: param.req,
+        context,
       });
 
       result = await table.delete(context, ncMeta);
@@ -466,7 +492,7 @@ export class TablesService {
       sourceId?: string;
       table: TableReqType;
       user: User | UserType;
-      req?: any;
+      req: NcRequest;
     },
   ) {
     // before validating add title for columns if only column name is present
@@ -803,10 +829,14 @@ export class TablesService {
     }
 
     this.appHooksService.emit(AppEvents.TABLE_CREATE, {
-      table: result,
+      table: {
+        ...param.table,
+        id: result.id,
+      },
+      source,
       user: param.user,
-      ip: param.req?.clientIp,
       req: param.req,
+      context,
     });
 
     return result;

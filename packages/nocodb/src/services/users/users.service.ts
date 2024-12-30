@@ -28,6 +28,7 @@ import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
 import { NcError } from '~/helpers/catchError';
 import { BasesService } from '~/services/bases.service';
 import { extractProps } from '~/helpers/extractProps';
+import deepClone from '~/helpers/deepClone';
 
 @Injectable()
 export class UsersService {
@@ -88,17 +89,26 @@ export class UsersService {
   async profileUpdate({
     id,
     params,
+    req,
   }: {
-    id: number;
+    id: string;
     params: {
       display_name?: string;
       avatar?: string;
       meta?: MetaType;
     };
+    req: NcRequest;
   }) {
+    const oldUser = await User.get(id);
     const updateObj = extractProps(params, ['display_name', 'avatar', 'meta']);
 
     const user = await User.update(id, updateObj);
+
+    this.appHooksService.emit(AppEvents.USER_PROFILE_UPDATE, {
+      user: deepClone(user),
+      oldUser,
+      req,
+    });
 
     await PresignedUrl.signMetaIconImage(user);
 
@@ -214,7 +224,6 @@ export class UsersService {
 
     this.appHooksService.emit(AppEvents.USER_PASSWORD_CHANGE, {
       user: user,
-      ip: param.req?.clientIp,
       req: param.req,
     });
 
@@ -263,7 +272,6 @@ export class UsersService {
           }),
         );
       } catch (e) {
-        console.log(e);
         return NcError.badRequest(
           'Email Plugin is not found. Please contact administrators to configure it in App Store first.',
         );
@@ -271,7 +279,6 @@ export class UsersService {
 
       this.appHooksService.emit(AppEvents.USER_PASSWORD_FORGOT, {
         user: user,
-        ip: param.req?.clientIp,
         req: param.req,
       });
     } else {
@@ -354,7 +361,6 @@ export class UsersService {
 
     this.appHooksService.emit(AppEvents.USER_PASSWORD_RESET, {
       user: user,
-      ip: param.req?.clientIp,
       req: param.req,
     });
 
@@ -389,7 +395,6 @@ export class UsersService {
 
     this.appHooksService.emit(AppEvents.USER_EMAIL_VERIFICATION, {
       user: user,
-      ip: req?.clientIp,
       req,
     });
 
@@ -541,7 +546,6 @@ export class UsersService {
 
     this.appHooksService.emit(AppEvents.USER_SIGNUP, {
       user: user,
-      ip: param.req?.clientIp,
       req: param.req,
     });
 

@@ -228,31 +228,6 @@ export interface AuditType {
 }
 
 /**
- * Model for Audit Row Update Request
- */
-export interface AuditRowUpdateReqType {
-  /**
-   * Column Name
-   * @example baz
-   */
-  column_name?: string;
-  /**
-   * Foreign Key to Model
-   * @example md_ehn5izr99m7d45
-   */
-  fk_model_id?: string;
-  /**
-   * Row ID
-   * @example rec0Adp9PMG9o7uJy
-   */
-  row_id?: string;
-  /** The previous value before the action */
-  prev_value?: any;
-  /** The current value after the action */
-  value?: any;
-}
-
-/**
  * Model for Source
  */
 export interface SourceType {
@@ -2618,7 +2593,7 @@ export interface SortType {
   /** Model for ID */
   fk_column_id?: IdType;
   /** Model for ID */
-  fk_model_id?: IdType;
+  fk_view_id?: IdType;
   /**
    * Source ID
    * @example ds_3l9qx8xqksenrl
@@ -10691,11 +10666,7 @@ export class Api<
 
 }`
  */
-    auditRowUpdate: (
-      rowId: any,
-      data: AuditRowUpdateReqType,
-      params: RequestParams = {}
-    ) =>
+    auditRowUpdate: (rowId: any, data: any, params: RequestParams = {}) =>
       this.request<
         AuditType,
         {
