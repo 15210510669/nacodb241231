@@ -128,7 +128,7 @@ export class DatasService {
       source,
     });
 
-    return await baseModel.nestedInsert(param.body, null, param.cookie);
+    return await baseModel.nestedInsert(param.body, param.cookie, null);
   }
 
   async dataUpdate(
@@ -849,7 +849,7 @@ export class DatasService {
       source,
     });
 
-    return await baseModel.insert(param.body, null, param.cookie);
+    return await baseModel.insert(param.body, param.cookie);
   }
 
   async dataUpdateByViewId(
