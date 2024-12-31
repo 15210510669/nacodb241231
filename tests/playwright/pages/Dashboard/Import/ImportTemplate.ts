@@ -69,9 +69,6 @@ export class ImportTemplatePage extends BasePage {
       httpMethodsToMatch: ['POST'],
       uiAction: () => this.get().locator('button:has-text("Import"):visible').click(),
     });
-    await this.dashboard.waitForTabRender({
-      title: tblList[0],
-    });
   }
 
   private async expandTableList(param: { index: number }) {
