@@ -25,7 +25,8 @@ FROM --platform=$BUILDPLATFORM node:22-slim as builder
 WORKDIR /usr/src/app
 
 # Install node-gyp dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ \
+
+RUN apt-get update && apt-get install -y --no-install-recommends python3 py3-setuptools make g++ \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install pnpm
