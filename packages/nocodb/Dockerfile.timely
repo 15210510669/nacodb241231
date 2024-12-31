@@ -50,7 +50,7 @@ RUN pnpm install --prod --shamefully-hoist \
 ############
 ## Binary Dependencies Builder
 ############
-FROM --platform=$TARGETPLATFORM node:18.19.1-alpine as bin-builder
+FROM --platform=$TARGETPLATFORM node:22.12.0-alpine as bin-builder
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache jq
