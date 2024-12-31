@@ -26,10 +26,17 @@ WORKDIR /usr/src/app
 # Install dependencies required for node-gyp and other build tools
 RUN apt-get update && apt-get install -y \
     python3 \
+    python3-distutils \
+    python-is-python3 \
     make \
     g++ \
     libssl-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Set Python explicitly for node-gyp and add it to PATH
+ENV PYTHON=/usr/bin/python3
+ENV PATH="$PATH:/usr/bin"
+
+RUN python3 --version && python --version
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
